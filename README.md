@@ -62,8 +62,10 @@ All commands use the `meteor-research:` namespace:
 | Command | Description |
 |---|---|
 | `/meteor-research:search-paper <query>` | Search PubMed, bioRxiv, Europe PMC |
-| `/meteor-research:monitor-spatial` | Check latest spatial omics papers (v0.2) |
+| `/meteor-research:monitor-spatial` | Check latest spatial omics papers |
 | `/meteor-research:draft-response` | Draft reviewer response letter |
+| `/meteor-research:draft-experiment <goal>` | Draft experimental design and protocol |
+| `/meteor-research:brainstorm <topic>` | Research ideas and analysis directions |
 | `/meteor-research:search-patent <query>` | Patent landscape search (v0.3, experimental) |
 
 Skills also auto-trigger from natural language (except `monitor-spatial`).
@@ -93,11 +95,15 @@ placeholders for missing information — never fabricates experiments or statist
 /meteor-research:draft-response
 ```
 
-### v0.2 — Spatial Omics Monitor (coming)
+### v0.2 — Available now
 
 #### `monitor-spatial`
 Checks PubMed + bioRxiv + medRxiv for new spatial omics papers since the last run.
 Maintains a local state file in `.meteor-research/` to track seen papers.
+
+```
+/meteor-research:monitor-spatial
+```
 
 > **Note on scheduling:** Monitoring state is project-local. Running from different
 > repositories creates separate histories. For a shared team history, designate one
@@ -105,7 +111,22 @@ Maintains a local state file in `.meteor-research/` to track seen papers.
 >
 > Cloud Routines (`/schedule`) run on a fresh repo clone — state is NOT persisted
 > across Routine runs. Routine reports are stateless weekly digests.
-> Requires Pro/Max/Team/Enterprise plan; may be disabled by org admin.
+
+#### `draft-experiment`
+Drafts a structured experimental design: groups, controls, assays, timeline, and gaps.
+Uses `[AUTHOR INPUT REQUIRED]` placeholders for missing controls or sample sizes.
+
+```
+/meteor-research:draft-experiment MERFISH validation in TNBC organoids
+```
+
+#### `brainstorm`
+Generates research ideas in three tiers (incremental / exploratory / speculative),
+anchored in recent PubMed literature. All ideas clearly labeled as hypotheses.
+
+```
+/meteor-research:brainstorm spatial omics tumor microenvironment TNBC
+```
 
 ### v0.3 — Patent Search (coming, experimental)
 

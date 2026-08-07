@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.2.0] — 2026-08-07
+
+### Added
+- `monitor-spatial` skill: monitors PubMed, bioRxiv, medRxiv for new spatial omics papers
+  - State-based deduplication (`.meteor-research/spatial-monitor-state.json`)
+  - 48 core technology keywords across MERFISH, Visium, seqFISH, CODEX, Slide-seq, etc.
+  - Topic grouping by application area (TME, neuroscience, immunology, methods, etc.)
+  - Malformed state recovery with `.bak` file
+  - Cloud Routine mode (stateless 7-day digest)
+- `draft-experiment` skill: experimental design and protocol outline drafting
+  - Structured output: objective, groups, controls, variables, methods, timeline
+  - Mandatory placeholder system for missing controls/sample sizes
+  - Literature precedent search via PubMed
+  - Safety rules preventing fabricated experimental outcomes
+- `brainstorm` skill: research idea and analysis direction generation
+  - Three-tier output: incremental / exploratory / speculative
+  - Literature anchoring via PubMed before generating ideas
+  - Clear hypothesis labeling — never presented as established findings
+
 ## [0.1.0] — 2026-08-07
 
 ### Added
