@@ -6,7 +6,7 @@ description: >
   "search patents", "특허 있어?", "patent landscape for X".
   NOT legal advice. Results require attorney review before any business decision.
 argument-hint: "<technology, biomarker, method, compound, or concept>"
-allowed-tools: Read, WebFetch, WebSearch, Write
+allowed-tools: Read, WebSearch, WebFetch, Write
 ---
 
 # search-patent
@@ -37,86 +37,79 @@ If either file cannot be loaded, STOP and report:
 Use `$ARGUMENTS` as the search query. If empty, ask:
 > "What technology, method, or concept would you like to search patents for?"
 
-Expand biomedical terms:
-- Gene names → include protein name, common aliases
-- Method names → include synonyms (e.g., "spatial transcriptomics" → "in situ sequencing")
-- Do NOT over-expand — 3–4 terms max
+Expand biomedical terms (3–4 synonyms max):
+- Gene names → include protein name and common aliases
+- Method names → include synonyms (e.g., "spatial transcriptomics" → also "in situ sequencing")
 
 ---
 
-## Step 2 — Search databases in priority order
+## Step 2 — Search databases
 
-### 2a. PatentsView (USPTO granted patents)
+### 2a. Google Patents (primary)
 
-```
-POST https://search.patentsview.org/api/v1/patent/
-Content-Type: application/json
-
-{
-  "q": {"_text_any": {"patent_title": "{QUERY}", "patent_abstract": "{QUERY}"}},
-  "f": ["patent_number", "patent_title", "patent_date", "patent_abstract",
-        "assignee_organization", "inventor_last_name", "app_number", "app_date"],
-  "o": {"per_page": 10, "sort": [{"patent_date": "desc"}]}
-}
-```
-
-For each result, attempt to retrieve independent claims:
-```
-GET https://search.patentsview.org/api/v1/patent/{patent_number}?f=["claims"]
-```
-Tag as `[claim-inspected]` if claims retrieved, `[official-page]` if abstract only.
-
-### 2b. PatentsView (USPTO published applications)
-
-```
-POST https://search.patentsview.org/api/v1/publication/
-Content-Type: application/json
-
-{
-  "q": {"_text_any": {"app_title": "{QUERY}", "app_abstract": "{QUERY}"}},
-  "f": ["app_number", "app_title", "app_date", "app_abstract",
-        "assignee_organization", "inventor_last_name"],
-  "o": {"per_page": 10, "sort": [{"app_date": "desc"}]}
-}
-```
-
-### 2c. Google Patents (WebSearch)
-
+**Step 1 — WebSearch to find candidates:**
 ```
 WebSearch: site:patents.google.com {QUERY}
 ```
+Collect up to 10 patent/application URLs from search snippets.
 
-For each hit, attempt WebFetch of the patent page to retrieve:
-- Patent/application number
-- Title, abstract, assignee, filing date, grant date
-- Claim 1 text (independent claim)
+From each snippet, extract what is visible:
+- Patent/application number (e.g., US20190276881A1, WO2020123742A1)
+- Title
+- Assignee (if shown)
+- Date (if shown)
+- Brief description from snippet
 
-Tag as `[official-page]` if page fetched successfully, `[snippet-only]` if not.
+**Step 2 — WebFetch each patent page:**
+For each URL found, attempt:
+```
+WebFetch: https://patents.google.com/patent/{number}/en
+```
+If WebFetch succeeds, extract:
+- Full title, assignee, inventors
+- Filing date, publication date, grant date (distinguish these three)
+- Abstract
+- Claim 1 text (first independent claim)
+→ Tag as `[official-page]` (abstract) or `[claim-inspected]` (if claim text retrieved)
 
-### 2d. Espacenet (European patents, if relevant)
+If WebFetch fails or is blocked:
+→ Use snippet data only, tag as `[snippet-only]`
+→ Do NOT infer claim text or abstract from title alone
+
+### 2b. Espacenet (European/international)
 
 ```
-WebFetch: https://worldwide.espacenet.com/patent/search?q={URL_ENCODED_QUERY}
+WebSearch: site:worldwide.espacenet.com {QUERY}
 ```
+Collect patent numbers and titles from snippets.
+Attempt WebFetch of individual pages if URLs are found.
+Tag results appropriately: `[official-page]` or `[snippet-only]`.
 
-Extract results if accessible. Tag as `[official-page]` or `[snippet-only]`.
-
-### 2e. KIPRIS (Korean patents, if user requests or query is Korea-relevant)
+### 2c. KIPRIS (Korean patents — run only if user requests or query is biotech/pharma)
 
 ```
 WebSearch: site:patent.kipris.or.kr {QUERY}
 ```
+Typically returns `[snippet-only]` results. Note language: KIPRIS pages are in Korean.
 
-Tag all KIPRIS results as `[snippet-only]` unless full page is accessible.
+### 2d. USPTO Open Data Portal (optional — requires API key)
+
+The USPTO PatentsView API migrated to data.uspto.gov in March 2026 and now requires
+an API key. If the user has configured a USPTO ODP API key, use:
+```
+GET https://data.uspto.gov/api/v1/patent/search
+  ?q={QUERY}&dateRange=grantDate:[2015-01-01 TO *]&hits.hits.total.value=true
+  Authorization: Bearer {USPTO_ODP_API_KEY}
+```
+If no API key is available, skip this source and note: `USPTO ODP not searched (API key required)`.
 
 ---
 
 ## Step 3 — Deduplicate
 
-Remove duplicates by:
-1. Exact patent number match (US1234567B2 == US1234567B2)
-2. Same application number → keep granted patent, note application
-3. Family members (same invention, different jurisdiction) → group together, do NOT merge into one entry
+1. Exact patent number match → deduplicate
+2. Same invention, different jurisdiction (US + EP + WO family) → group as patent family, show all numbers
+3. If two sources give conflicting numbers for the same apparent patent → flag conflict, show both
 
 ---
 
@@ -124,10 +117,10 @@ Remove duplicates by:
 
 Use output format from `<skill-dir>/references/output-schema.md`.
 
-Group results into:
-- **Granted patents** — issued, currently in force (unverified — confirm with official register)
-- **Published applications** — pending, not yet granted
-- **[snippet-only] candidates** — search snippet only, not verified
+Group results:
+- **Granted patents** — number format ends in B1, B2, etc.
+- **Published applications** — number format ends in A1, A2, etc.
+- **[snippet-only] candidates** — unverified, snippet data only
 
 ---
 
@@ -136,9 +129,10 @@ Group results into:
 File naming: `patent-search-{sanitized-query}-{YYYY-MM-DD}.md`
 If exists: `-2`, `-3` suffix. Never overwrite.
 
-Always append to saved file:
+Always append:
 ```
 Search performed: {YYYY-MM-DD}
-Sources: PatentsView, Google Patents, Espacenet, KIPRIS (if searched)
+Sources searched: Google Patents, Espacenet, KIPRIS (if searched)
+USPTO ODP: {searched with key / not searched — API key required}
 DISCLAIMER: Not a legal opinion. Verify all results with official patent registers.
 ```

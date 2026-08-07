@@ -81,13 +81,15 @@ Extract: `pmid`, `pmcid`, `doi`, `title`, `authorString`, `journalTitle`, `pubYe
 ```
 https://api.biorxiv.org/details/biorxiv/{START_DATE}/{END_DATE}/0
 ```
-where `START_DATE` = today minus 30 days in `YYYY-MM-DD` format, `END_DATE` = today in `YYYY-MM-DD` format.
-Example: `https://api.biorxiv.org/details/biorxiv/2026-07-08/2026-08-07/0`
+Always compute explicit `YYYY-MM-DD` dates — the `Nd` shorthand is NOT supported.
 
-**IMPORTANT:** The `Nd` shorthand (e.g., `30d`) is NOT supported — always compute and pass explicit dates.
+**Date window:**
+- If user query includes "recent", "latest", "최신": use past 30 days
+- General query (no recency signal): use past 90 days
+- User specifies a year or date range: use that range
 
 Filter results locally: keep only papers where `title` OR `abstract` contains query keywords.
-Handle pagination: check `messages[0].count` for total; if total > 30, fetch cursor=30, 60, etc. until relevance drops or 90 results reached.
+Paginate if total > 30: fetch cursor=30, 60, etc. until relevance drops or 90 results reached.
 Do the same for medRxiv: replace `biorxiv` with `medrxiv` in the URL.
 
 ### 2d. Publisher fallback (conditional)

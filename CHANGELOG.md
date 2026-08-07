@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.1] — 2026-08-07
+
+### Fixed
+- `search-patent`: PatentsView API retired (USPTO migration March 2026, now requires API key)
+  — rewritten to use Google Patents WebSearch as primary, with WebFetch for page details
+  — patent-databases.md updated with accurate access status for all sources
+  — USPTO ODP documented as optional (API key required)
+- `brainstorm`: PubMed literature anchoring was missing EFetch step — now does full
+  ESearch→EFetch batch to retrieve abstracts before generating ideas
+- `search-paper`: bioRxiv window was hardcoded to 30 days — now adaptive
+  (30 days for "recent/latest" queries, 90 days for general queries)
+- `draft-experiment`: removed unused `Agent` from allowed-tools
+- `monitor-spatial`: bioRxiv local filtering now explicitly uses Group A OR Group B keywords
+
 ## [0.3.0] — 2026-08-07
 
 ### Added

@@ -35,13 +35,22 @@ If unclear, ask once:
 
 ## Step 2 — Literature anchoring (brief)
 
-Run a quick search to anchor brainstorming in real published work:
+Run a 2-step PubMed search to anchor brainstorming in real published work:
+
+**Step 2a — ESearch (get PMIDs):**
 ```
 https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi
   ?db=pubmed&term={TOPIC}&retmax=5&retmode=json&sort=pub_date
 ```
-Retrieve titles and abstracts for top 3–5 results.
-Use these to:
+
+**Step 2b — EFetch (get titles + abstracts in one batch call):**
+```
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi
+  ?db=pubmed&id={PMID1,PMID2,...}&retmode=xml&rettype=abstract
+```
+NEVER call EFetch once per PMID — always batch.
+
+Use retrieved papers to:
 - Identify what has already been done (avoid duplication)
 - Surface gaps in the field
 - Suggest directions building on recent work

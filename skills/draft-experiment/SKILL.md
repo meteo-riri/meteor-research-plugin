@@ -7,7 +7,7 @@ description: >
   "실험 방법 제안해줘", "design an experiment for X".
   Do NOT trigger for simple methodological questions already answered in conversation.
 argument-hint: "<research question, hypothesis, or experimental goal>"
-allowed-tools: Read, WebFetch, WebSearch, Write, Agent
+allowed-tools: Read, WebFetch, WebSearch, Write
 ---
 
 # draft-experiment

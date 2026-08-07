@@ -84,7 +84,8 @@ Batch ESummary for all PMIDs, then EFetch for abstracts of non-seen results.
 ```
 https://api.biorxiv.org/details/biorxiv/{START_DATE}/{END_DATE}/0
 ```
-Filter locally using keywords from spatial-keywords.md (title + abstract).
+Filter locally: keep papers where `title` OR `abstract` contains any Group A OR Group B
+keyword from spatial-keywords.md.
 Paginate if total > 30.
 
 Also check medRxiv with same date window.
