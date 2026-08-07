@@ -26,7 +26,7 @@ reviewer response drafting, and patent landscape search.
 ### Step 1 — Add Meteor Biotech marketplace (admin, one-time)
 
 ```bash
-/plugin marketplace add meteorbiotech/meteor-research-plugin
+/plugin marketplace add meteo-riri/meteor-research-plugin
 ```
 
 ### Step 2 — Install (each team member)
