@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.0] — 2026-08-07
+
+### Added
+- `search-patent` skill: technology landscape search across patent databases
+  - PatentsView (USPTO) granted patents and published applications via structured API
+  - Google Patents via WebSearch + WebFetch
+  - Espacenet (European/international patents)
+  - KIPRIS (Korean patents, on request)
+  - Evidence tiers: [claim-inspected] / [official-page] / [snippet-only]
+  - Independent claim retrieval with plain-language orientation summary
+  - Number conflict detection (cross-source disagreement flagged, never silently merged)
+  - Mandatory legal disclaimer on all output
+  - Filing / publication / grant date clearly distinguished
+
 ## [0.2.0] — 2026-08-07
 
 ### Added

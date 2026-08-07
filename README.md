@@ -128,11 +128,16 @@ anchored in recent PubMed literature. All ideas clearly labeled as hypotheses.
 /meteor-research:brainstorm spatial omics tumor microenvironment TNBC
 ```
 
-### v0.3 — Patent Search (coming, experimental)
+### v0.3 — Available now (experimental)
 
 #### `search-patent`
 Technology landscape search across USPTO (PatentsView), Google Patents, Espacenet,
-and KIPRIS. All results include legal disclaimers. Not a legal opinion.
+and KIPRIS. Evidence tiers: `[claim-inspected]` / `[official-page]` / `[snippet-only]`.
+All output includes mandatory legal disclaimer. Not a legal opinion.
+
+```
+/meteor-research:search-patent MERFISH spatial transcriptomics
+```
 
 ---
 

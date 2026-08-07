@@ -1,7 +1,7 @@
 {
   "name": "meteor-research",
   "description": "Biomedical research tools: paper search (PubMed/bioRxiv/Europe PMC), spatial omics monitoring, reviewer response drafting, and patent landscape search.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": {
     "name": "Meteor Biotech",
     "email": "riri.oh@meteorbiotech.com"
