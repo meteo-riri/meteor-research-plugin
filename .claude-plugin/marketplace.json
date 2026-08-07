@@ -1,0 +1,16 @@
+{
+  "name": "meteorbiotech",
+  "description": "Meteor Biotech internal marketplace for biomedical research tools.",
+  "owner": {
+    "name": "Meteor Biotech",
+    "email": "riri.oh@meteorbiotech.com"
+  },
+  "plugins": [
+    {
+      "name": "meteor-research",
+      "description": "Biomedical research tools for Meteor Biotech.",
+      "version": "0.1.0",
+      "source": "./"
+    }
+  ]
+}
