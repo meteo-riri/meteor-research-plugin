@@ -1,6 +1,8 @@
 # Patent Search — Golden Test Cases
 
-Run these manually after implementing `skills/search-patent/` (v0.3).
+Run these manually after changes to `skills/search-patent/`.
+Note: PatentsView migrated to USPTO ODP (March 2026, API key required).
+Primary search is Google Patents via WebSearch + WebFetch.
 
 ---
 
@@ -13,45 +15,44 @@ Run these manually after implementing `skills/search-patent/` (v0.3).
 
 **Expected:**
 - First line of output: legal disclaimer + search date
-- Results include both granted patents (US1234567B2 format) and published applications (US20230123456A1 format), listed separately
+- Results include both granted patents (format: US1234567B2) and published applications (US20230123456A1), listed separately
 - Filing date / publication date / grant date shown separately for each result
-- Each result has a verification level: `[claim-inspected]`, `[official-page]`, or `[snippet-only]`
+- Each result has an evidence tag: `[claim-inspected]`, `[official-page]`, or `[snippet-only]`
 - No fabricated patent numbers
 
 **Fail criteria:**
-- No legal disclaimer
+- No legal disclaimer in output
 - Granted and pending applications mixed without distinction
-- A patent number that cannot be found on Google Patents or PatentsView
+- A patent number that cannot be found on Google Patents
 
 ---
 
 ## Case 2: Claim text unavailable
 
-**Setup:** A patent where claim text cannot be retrieved (check PatentsView response).
+**Setup:** A patent where WebFetch of the patent page is blocked or returns no claim text.
 
 **Expected:**
 ```
 Independent claim inspected: No
 Claim orientation summary: Not available. Claim text could not be retrieved.
-Verification: [official-page]
+Verification: [snippet-only]
 ```
-NOT: A fabricated claim summary based on the title
+NOT: A fabricated claim summary inferred from the title or abstract snippet.
 
 ---
 
 ## Case 3: Patent number conflict between sources
 
-**Setup:** Same invention appearing with different numbers on Google Patents vs PatentsView.
+**Setup:** Same invention appearing with different identifiers from Google Patents vs Espacenet.
 
 **Expected:**
 - Both sources listed with their respective identifiers
 - A conflict note:
   ```
-  Note: Identifier mismatch between sources. Verify manually.
-  Google Patents: US20230123456A1
-  PatentsView: US11234567B2
+  ⚠️ Number conflict: Google Patents (US20230123456A1) vs Espacenet (EP4123456A1)
+  Do not consolidate. Verify manually on official patent registries.
   ```
-- NOT merged into a single number
+- NOT merged into a single record
 
 ---
 
@@ -63,18 +64,36 @@ NOT: A fabricated claim summary based on the title
 ```
 
 **Expected:**
-- At least one search attempt against KIPRIS (`kipris.or.kr`)
-- Korean patent numbers labeled distinctly (KR format)
-- If KIPRIS unavailable: fallback noted, no invented Korean patents
+- At least one WebSearch attempt against KIPRIS or Korean patent databases
+- Korean patent numbers labeled distinctly (KR format if found)
+- If KIPRIS returns no usable results: fallback noted, no invented Korean patents
 
 ---
 
 ## Case 5: Snippet-only result isolation
 
-If a patent result is found only via web search snippet:
+When a patent result is found only via web search snippet (WebFetch blocked):
 
 **Expected:**
 - Tagged `[snippet-only]`
 - No claim summary generated
 - Listed in "Unverified candidates" section only
-- Disclaimer: "Verify on official patent office website"
+- Note: "Verify on official patent office website before use"
+
+---
+
+## Case 6: Legal disclaimer always present
+
+**Command:** Any patent search command.
+
+**Expected:**
+- Output always begins with:
+  ```
+  ⚠️ EXPERIMENTAL. Preliminary landscape search only.
+     NOT a legal novelty, FTO, or patentability opinion...
+  ```
+- Disclaimer appears BEFORE any results
+- Search date: correct YYYY-MM-DD format
+
+**Fail criteria:**
+- Any patent search output without the disclaimer block

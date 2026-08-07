@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.3.2] — 2026-08-07
+
+### Fixed
+- `tests/patent-search-cases.md`: removed PatentsView references (retired March 2026)
+  updated Case 3 conflict example to Google Patents vs Espacenet
+- Added missing test cases for v0.2 skills:
+  `tests/monitor-spatial-cases.md` (5 cases: first run, incremental, malformed state, topic grouping, keyword filter)
+  `tests/draft-experiment-cases.md` (5 cases: missing controls, fabrication prevention, regulatory flag, protocol reference, versioning)
+  `tests/brainstorm-cases.md` (5 cases: tier structure, literature anchoring, hypothesis labeling, save-on-request, vague input)
+
 ## [0.3.1] — 2026-08-07
 
 ### Fixed
