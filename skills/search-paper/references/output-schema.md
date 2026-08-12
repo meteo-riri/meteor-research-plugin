@@ -3,6 +3,12 @@
 ## Required Fields (every entry)
 
 ```
+IF:             [Journal Impact Factor — 2-year JCR, most recent year available,
+                 e.g. "42.5 (2024 JCR)". Source: WebSearch "{journal}" impact factor JCR.
+                 Preprint servers: "N/A (preprint)". Not found: "IF: Not available".]
+Citations:      [Crossref referenced-by-count via https://api.crossref.org/works/{DOI}.
+                 Note: Crossref counts may be lower than Google Scholar.
+                 Format: "N (Crossref, YYYY-MM-DD)". No DOI: "Not available".]
 Title:          [exact title from source, DO NOT modify]
 Authors:        [as returned by API; "et al." acceptable for >6 authors]
 Journal/Server: [journal name or "bioRxiv" / "medRxiv"]
@@ -17,6 +23,23 @@ Source DB:      [PubMed | Europe PMC | bioRxiv | Crossref | Publisher | WebSearc
 API endpoint:   [exact URL used to retrieve this record]
 Evidence:       [[title-only] | [abstract] | [full-text] | [partial-text] | [snippet-only]]
 ```
+
+## Fetching IF and Citation Count
+
+**Citation count** — for every paper with a DOI, call Crossref in batch where possible:
+```
+https://api.crossref.org/works/{DOI}  →  message.referenced-by-count
+```
+Batch via `https://api.crossref.org/works?filter=doi:{DOI1},{DOI2}` if available.
+Always note the retrieval date next to the count.
+
+**Impact Factor** — look up once per unique journal via WebSearch:
+```
+"{journal name}" impact factor JCR 2024
+```
+Accept the first clearly sourced JCR or Clarivate value. Note the data year.
+Cache within the session — do not repeat the same journal lookup twice.
+If conflicting values appear, use the lower figure and note "varies by source".
 
 ## Summary (required when evidence = [abstract] or higher)
 
